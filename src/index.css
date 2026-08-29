@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #11141C;
+  --color-ink-soft: #1B2030;
+  --color-paper: #F4F2EC;
+  --color-paper-dim: #E7E3D8;
+  --color-signal: #FF5A1F;
+  --color-electric: #3A5CFF;
+  --color-muted-text: #8A8D9B;
+
+  --font-display: 'Space Grotesk', 'Cairo', sans-serif;
+  --font-body: 'Inter', 'Cairo', sans-serif;
+  --font-arabic: 'Cairo', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  font-family: 'Cairo', 'Inter', sans-serif;
+  background-color: #F4F2EC;
+  color: #11141C;
+}
+
+/* Scrollbar hide by default, show on hover */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(138, 141, 155, 0.3);
+  border-radius: 2px;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', monospace;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', 'Cairo', sans-serif;
+}
+
+/* Stamp badge rotation */
+.stamp-badge {
+  transform: rotate(-12deg);
+  transform-origin: center;
+}
+
+/* Dashed divider */
+.manifest-divider {
+  border-top: 1.5px dashed rgba(138, 141, 155, 0.4);
+}
+
+/* Manifest card line item hover */
+.line-item-row:hover {
+  background: rgba(255, 90, 31, 0.04);
+}
+
+/* Custom selection color */
+::selection {
+  background: rgba(255, 90, 31, 0.2);
+}
