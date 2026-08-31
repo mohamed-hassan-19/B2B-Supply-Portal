@@ -42,7 +42,7 @@ export default function NavBar() {
               L
             </div>
             <span className="font-display font-bold text-base tracking-tight" style={{ color: "#F4F2EC" }}>
-              Lista
+              LISTO
             </span>
           </Link>
 
@@ -93,7 +93,7 @@ export default function NavBar() {
               className="text-xs font-mono px-3 py-1.5 rounded border transition-colors"
               style={{ color: "#8A8D9B", borderColor: "rgba(138,141,155,0.2)", background: "transparent" }}
             >
-              خروج
+             خروج
             </button>
           </div>
         </div>

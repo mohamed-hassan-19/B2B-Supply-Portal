@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { api } from "../lib/api";
 
 type PaymentPref = "cod" | "credit" | "";
 type Step = "form" | "pending";
@@ -32,24 +33,18 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/client/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          company_name: form.companyName,
-          tax_id: form.taxReg,
-          email: form.email,
-          password: form.password,
-          contact_phone: form.phone,
-          contact_address: form.city,
-          preferred_payment_method: paymentPref === "cod" ? "COD" : "Credit"
-        })
+      await api.post("/api/client/auth/register", {
+        company_name: form.companyName,
+        tax_id: form.taxReg,
+        email: form.email,
+        password: form.password,
+        contact_phone: form.phone,
+        contact_address: form.city,
+        preferred_payment_method: paymentPref === "cod" ? "COD" : "Credit"
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to register");
       setStep("pending");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
+import { api, API_BASE_URL } from "../lib/api";
 
 const CATEGORIES = ["الكل", "مواد البناء", "كهرباء وطاقة", "معدات السلامة", "معدات صناعية", "أخشاب", "دهانات", "أدوات ومستلزمات"];
 
@@ -17,14 +18,13 @@ export default function CatalogPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let url = `http://localhost:3000/api/catalog?page=${page}&limit=${PER_PAGE}`;
-        if (search) url += `&search=${encodeURIComponent(search)}`;
-        if (category !== "الكل") url += `&category=${encodeURIComponent(category)}`;
+        const params: any = { page, limit: PER_PAGE };
+        if (search) params.search = search;
+        if (category !== "الكل") params.category = category;
         
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          // Map backend items to frontend format
+        const res = await api.get('/api/catalog', { params });
+        const data = res.data;
+        // Map backend items to frontend format
           const mapped = data.items.map((p: any) => ({
             id: p.id,
             sku: p.sku || `SKU-${p.id}`,
@@ -37,13 +37,12 @@ export default function CatalogPage() {
             stock: p.stock_level,
             stockStatus: p.stock_level > 100 ? "in_stock" : p.stock_level > 0 ? "low_stock" : "out_of_stock",
             image: p.images && p.images.length > 0 
-              ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `http://localhost:3000${p.images[0]}`) : p.images[0]) 
+              ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `${API_BASE_URL}${p.images[0]}`) : p.images[0]) 
               : "https://via.placeholder.com/300",
           }));
           setProducts(mapped);
           setTotalPages(data.totalPages);
           setTotalCount(data.total);
-        }
       } catch (err) {
         console.error("Failed to fetch catalog", err);
       }

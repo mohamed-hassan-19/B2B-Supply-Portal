@@ -3,6 +3,7 @@ import { statusLabels, formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
 import StampBadge from "../components/StampBadge";
 import ManifestCard from "../components/ManifestCard";
+import { api } from "../lib/api";
 
 export default function QuotesPage() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -17,10 +18,8 @@ export default function QuotesPage() {
 
   const fetchQuotes = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/storefront/quotes", {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("client_token")}` }
-      });
-      const data = await res.json();
+      const res = await api.get('/api/storefront/quotes');
+      const data = res.data;
       const mapped = data.map((q: any) => ({
         id: `RFQ-${q.id}`,
         rawId: q.id,
@@ -75,10 +74,7 @@ export default function QuotesPage() {
             secondaryActionLabel={canAct ? "رفض العرض" : undefined}
             onSecondaryAction={canAct ? async () => {
               try {
-                await fetch(`http://localhost:3000/api/storefront/quotes/${quote.rawId}/reject`, {
-                  method: "POST",
-                  headers: { "Authorization": `Bearer ${localStorage.getItem("client_token")}` }
-                });
+                await api.post(`/api/storefront/quotes/${quote.rawId}/reject`);
                 fetchQuotes();
                 setSelected(null);
               } catch (err) {
@@ -135,23 +131,14 @@ export default function QuotesPage() {
                   <button
                     onClick={async () => {
                       try {
-                        const res = await fetch(`http://localhost:3000/api/storefront/quotes/${quote.rawId}/accept`, {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${localStorage.getItem("client_token")}`
-                          },
-                          body: JSON.stringify({ paymentMethod: payment === "cod" ? "COD" : "Credit" })
+                        await api.post(`/api/storefront/quotes/${quote.rawId}/accept`, {
+                          paymentMethod: payment === "cod" ? "COD" : "Credit"
                         });
-                        if (!res.ok) {
-                          const e = await res.json();
-                          throw new Error(e.message || "Failed to accept");
-                        }
                         setShowPayment(null);
                         setSelected(null);
                         fetchQuotes();
                       } catch (err: any) {
-                        alert("Failed: " + err.message);
+                        alert("Failed to accept quote: " + (err.response?.data?.message || err.message));
                       }
                     }}
                     className="flex-1 py-2.5 rounded-lg font-bold text-sm"

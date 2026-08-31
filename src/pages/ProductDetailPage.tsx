@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatPrice } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import NavBar from "../components/NavBar";
+import { api, API_BASE_URL } from "../lib/api";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -14,12 +15,9 @@ export default function ProductDetailPage() {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/catalog/${id}`)
+    api.get(`/api/catalog/${id}`)
       .then(res => {
-        if (!res.ok) throw new Error("Not found");
-        return res.json();
-      })
-      .then(p => {
+        const p = res.data;
         setProduct({
           id: String(p.id),
           sku: p.sku || `SKU-${p.id}`,
@@ -31,7 +29,7 @@ export default function ProductDetailPage() {
           stock: p.stock_level,
           stockStatus: p.stock_level > 100 ? "in_stock" : p.stock_level > 0 ? "low_stock" : "out_of_stock",
           image: p.images && p.images.length > 0 
-            ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `http://localhost:3000${p.images[0]}`) : p.images[0]) 
+            ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `${API_BASE_URL}${p.images[0]}`) : p.images[0]) 
             : "https://via.placeholder.com/300",
           description: p.description
         });

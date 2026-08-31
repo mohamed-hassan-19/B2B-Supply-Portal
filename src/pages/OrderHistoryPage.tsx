@@ -3,6 +3,7 @@ import { statusLabels } from "../data/mockData";
 import ManifestCard from "../components/ManifestCard";
 import NavBar from "../components/NavBar";
 import StampBadge from "../components/StampBadge";
+import { api } from "../lib/api";
 
 export default function OrderHistoryPage() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -10,10 +11,8 @@ export default function OrderHistoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/storefront/orders", {
-      headers: { "Authorization": `Bearer ${localStorage.getItem("client_token")}` }
-    })
-      .then(res => res.json())
+    api.get('/api/storefront/orders')
+      .then(res => res.data)
       .then(data => {
         // Map backend orders to match mock shape
         const mapped = data.map((o: any) => ({

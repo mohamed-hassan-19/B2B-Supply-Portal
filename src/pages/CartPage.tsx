@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 import { formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
 import StampBadge from "../components/StampBadge";
+import { api } from "../lib/api";
 
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQty, cartTotal, isCreditApproved } = useApp();
@@ -242,27 +243,16 @@ export default function CartPage() {
             <button
               onClick={async () => {
                 try {
-                  const res = await fetch("http://localhost:3000/api/storefront/orders", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "Authorization": `Bearer ${localStorage.getItem("client_token")}`
-                    },
-                    body: JSON.stringify({
-                      paymentMethod: paymentMethod === "cod" ? "COD" : "Credit",
-                      items: cartItems.map(i => ({
-                         productId: parseInt(i.product.id),
-                         quantity: i.qty
-                      }))
-                    })
+                  await api.post('/api/storefront/orders', {
+                    paymentMethod: paymentMethod === "cod" ? "COD" : "Credit",
+                    items: cartItems.map(i => ({
+                       productId: parseInt(i.product.id),
+                       quantity: i.qty
+                    }))
                   });
-                  if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.message || "Failed to submit");
-                  }
                   setSubmitted(true);
                 } catch (err: any) {
-                  alert("Failed to submit order: " + err.message);
+                  alert("Failed to submit order: " + (err.response?.data?.message || err.message));
                 }
               }}
               className="w-full py-3.5 rounded-xl font-bold text-sm transition-opacity hover:opacity-90"

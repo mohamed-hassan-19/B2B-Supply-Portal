@@ -49,7 +49,7 @@ export default function HomePage() {
               L
             </div>
             <span className="font-display font-bold text-base tracking-tight" style={{ color: "#F4F2EC" }}>
-              Lista
+              LISTO
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -367,7 +367,7 @@ export default function HomePage() {
         style={{ background: "#0d1018", borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
         <div className="font-mono text-xs" style={{ color: "#8A8D9B" }}>
-          © 2026 Lista — منصة مشتريات B2B للسوق المصري
+          © 2026 LISTO — منصة مشتريات B2B للسوق المصري
         </div>
       </footer>
     </div>

@@ -3,6 +3,7 @@ import { statusLabels, formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
 import ManifestCard from "../components/ManifestCard";
 import StampBadge from "../components/StampBadge";
+import { api } from "../lib/api";
 
 const invStatus = (s: string) => (s === "pending" ? "pending_inv" : s);
 
@@ -12,10 +13,8 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/storefront/invoices", {
-      headers: { "Authorization": `Bearer ${localStorage.getItem("client_token")}` }
-    })
-      .then(res => res.json())
+    api.get("/api/storefront/invoices")
+      .then(res => res.data)
       .then(data => {
         const mapped = data.map((inv: any) => ({
           id: `INV-${inv.id}`,

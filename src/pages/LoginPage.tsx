@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Eye, EyeOff } from 'lucide-react';
+import { api } from "../lib/api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -17,18 +18,11 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/client/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to login");
-      
-      login(data.access_token);
+      const res = await api.post("/api/client/auth/login", { email, password });
+      login(res.data.access_token);
       navigate("/catalog");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +42,7 @@ export default function LoginPage() {
           L
         </div>
         <span className="font-display font-bold text-xl tracking-tight" style={{ color: "#11141C" }}>
-          Lista
+          LISTO
         </span>
       </Link>
 
@@ -60,7 +54,7 @@ export default function LoginPage() {
           تسجيل الدخول
         </h1>
         <p className="text-sm mb-7" style={{ color: "#8A8D9B" }}>
-          مرحباً بك في منصة Lista للمشتريات
+          مرحباً بك في منصة LISTO للمشتريات
         </p>
 
         {error && <div className="mb-4 rounded p-3 text-sm" style={{ background: "#FFEBEB", color: "#E02D2D" }}>{error}</div>}

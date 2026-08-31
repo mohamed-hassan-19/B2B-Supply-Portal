@@ -1,4 +1,4 @@
-Design a B2B procurement storefront called "Lista" — a bold, industrial-modern web app where companies browse a supply catalog and order or request quotes. This is not a consumer e-commerce site — it should feel like professional infrastructure for procurement teams, not a retail shop.
+Design a B2B procurement storefront called "LISTO" — a bold, industrial-modern web app where companies browse a supply catalog and order or request quotes. This is not a consumer e-commerce site — it should feel like professional infrastructure for procurement teams, not a retail shop.
 
 ## Design Direction
 Bold and modern with strong, deliberate color use — not minimal, not corporate-beige. Draw from industrial/logistics visual language: purchase orders, packing slips, warehouse hazard-tape coloring, shipping manifests.
