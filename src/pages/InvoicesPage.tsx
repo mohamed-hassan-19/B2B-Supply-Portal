@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { statusLabels, formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
-import ManifestCard from "../components/ManifestCard";
 import StampBadge from "../components/StampBadge";
 import { api } from "../lib/api";
+import { InvoiceDetail } from "../components/InvoiceDetail";
 
 const invStatus = (s: string) => (s === "pending" ? "pending_inv" : s);
 
@@ -18,6 +18,7 @@ export default function InvoicesPage() {
       .then(data => {
         const mapped = data.map((inv: any) => ({
           id: `INV-${inv.id}`,
+          rawId: inv.id,
           orderId: `ORD-${inv.order_id}`,
           date: inv.createdAt,
           dueDate: inv.due_date,
@@ -30,6 +31,17 @@ export default function InvoicesPage() {
       });
   }, []);
 
+  const handleDownloadPdf = async (id: number) => {
+    try {
+      const res = await api.get(`/api/storefront/invoices/${id}/pdf`);
+      if (res.data?.pdfUrl) {
+        window.open(`http://localhost:3000${res.data.pdfUrl}`, '_blank');
+      }
+    } catch (err) {
+      console.error('Failed to get PDF', err);
+    }
+  };
+
   const invoice = invoices.find((i) => i.id === selected);
 
   if (selected && invoice) {
@@ -37,39 +49,25 @@ export default function InvoicesPage() {
       <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
         <NavBar />
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
-          <button
-            onClick={() => setSelected(null)}
-            className="flex items-center gap-2 text-sm mb-6 font-medium"
-            style={{ color: "#8A8D9B" }}
-          >
-            › العودة للفواتير
-          </button>
-
-          <ManifestCard
-            id={invoice.id}
-            date={invoice.date}
-            status={invStatus(invoice.status)}
-            items={invoice.items}
-            total={invoice.total}
-            extraInfo={`تاريخ الاستحقاق: ${new Date(invoice.dueDate).toLocaleDateString("ar-EG")}`}
-          />
-
-          {invoice.status === "overdue" && (
-            <div
-              className="mt-4 rounded-xl p-4 flex items-start gap-3"
-              style={{ background: "rgba(255,90,31,0.08)", border: "1px solid rgba(255,90,31,0.25)" }}
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={() => setSelected(null)}
+              className="flex items-center gap-2 text-sm font-medium"
+              style={{ color: "#8A8D9B" }}
             >
-              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "#FF5A1F" }}>
-                <span className="text-white text-[10px] font-bold">!</span>
-              </div>
-              <div>
-                <div className="font-semibold text-sm mb-0.5" style={{ color: "#FF5A1F" }}>الفاتورة متأخرة</div>
-                <p className="text-xs" style={{ color: "#c2410c" }}>
-                  تجاوزت هذه الفاتورة تاريخ الاستحقاق. يرجى التواصل مع فريق المشتريات على الفور.
-                </p>
-              </div>
-            </div>
-          )}
+              ← Back to Invoices
+            </button>
+            <button
+              onClick={() => handleDownloadPdf(invoice.rawId)}
+              className="px-4 py-2 bg-gray-900 text-white rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+            >
+              Download PDF
+            </button>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <InvoiceDetail invoiceId={invoice.rawId} apiPath="/api/storefront/invoices" />
+          </div>
         </div>
       </div>
     );
