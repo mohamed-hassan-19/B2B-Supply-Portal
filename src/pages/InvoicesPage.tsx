@@ -33,10 +33,10 @@ export default function InvoicesPage() {
 
   const handleDownloadPdf = async (id: number) => {
     try {
-      const res = await api.get(`/api/storefront/invoices/${id}/pdf`);
-      if (res.data?.pdfUrl) {
-        window.open(`http://localhost:3000${res.data.pdfUrl}`, '_blank');
-      }
+      const res = await api.get(`/api/storefront/invoices/${id}/pdf`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const pdfUrl = window.URL.createObjectURL(blob);
+      window.open(pdfUrl, '_blank');
     } catch (err) {
       console.error('Failed to get PDF', err);
     }
