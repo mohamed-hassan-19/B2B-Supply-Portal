@@ -35,12 +35,12 @@ export default function RegisterPage() {
     try {
       await api.post("/api/client/auth/register", {
         company_name: form.companyName,
-        tax_id: form.taxReg,
         email: form.email,
         password: form.password,
-        contact_phone: form.phone,
-        contact_address: form.city,
-        preferred_payment_method: paymentPref === "cod" ? "COD" : "Credit"
+        commercial_registration: form.commercialReg,
+        tax_registration: form.taxReg,
+        contact_name: form.contactName,
+        contact_phone: form.phone
       });
       setStep("pending");
     } catch (err: any) {

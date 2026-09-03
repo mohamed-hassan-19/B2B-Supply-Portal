@@ -27,6 +27,7 @@ export default function QuotesPage() {
         validUntil: q.valid_until,
         status: q.status,
         total: Number(q.total_amount),
+        relatedOrderId: q.related_order_id,
         notes: "",
         items: q.QuoteItems?.map((i: any) => ({
           sku: i.product_id,
@@ -198,7 +199,14 @@ export default function QuotesPage() {
                       <div className="absolute top-4 left-4">
                         <StampBadge status={st} label={statusLabels[st] || st} size="sm" />
                       </div>
-                      <div className="font-mono text-xs font-semibold" style={{ color: "#FF5A1F" }}>{q.id}</div>
+                      <div className="font-mono text-xs font-semibold flex items-center gap-2" style={{ color: "#FF5A1F" }}>
+                        {q.id}
+                        {q.relatedOrderId && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium" style={{ background: "#fef3c7", color: "#b45309" }}>
+                            تحديث لطلب #{q.relatedOrderId}
+                          </span>
+                        )}
+                      </div>
                       <div className="font-mono text-[10px] mt-0.5" style={{ color: "#8A8D9B" }}>
                         {new Date(q.date).toLocaleDateString("ar-EG")} · صالح حتى {new Date(q.validUntil).toLocaleDateString("ar-EG")}
                       </div>

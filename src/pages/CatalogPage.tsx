@@ -1,147 +1,126 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { formatPrice } from "../data/mockData";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import NavBar from "../components/NavBar";
-import { api, API_BASE_URL } from "../lib/api";
+import { api } from "../lib/api";
 
-const CATEGORIES = ["الكل", "مواد البناء", "كهرباء وطاقة", "معدات السلامة", "معدات صناعية", "أخشاب", "دهانات", "أدوات ومستلزمات"];
+const PER_PAGE = 8;
 
 export default function CatalogPage() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("الكل");
+  const [categoryId, setCategoryId] = useState<number | "all">("all");
+  const [categories, setCategories] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const PER_PAGE = 6;
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCategories = async () => {
       try {
-        const params: any = { page, limit: PER_PAGE };
-        if (search) params.search = search;
-        if (category !== "الكل") params.category = category;
-        
-        const res = await api.get('/api/catalog', { params });
-        const data = res.data;
-        // Map backend items to frontend format
-          const mapped = data.items.map((p: any) => ({
+        const res = await api.get('/api/catalog/categories');
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const fetchProducts = async () => {
+        try {
+          const params: any = { page, limit: PER_PAGE };
+          if (search) params.search = search;
+          if (categoryId !== "all") params.category_id = categoryId;
+          
+          const res = await api.get('/api/catalog', { params });
+          const data = res.data;
+          
+          setTotalPages(data.totalPages);
+          setProducts(data.items.map((p: any) => ({
             id: p.id,
             sku: p.sku || `SKU-${p.id}`,
             nameAr: p.name,
             nameEn: p.name,
-            category: p.category,
+            category: p.Category?.name || 'Uncategorized',
             price: Number(p.price),
             originalPrice: p.original_price ? Number(p.original_price) : undefined,
             unit: "قطعة",
             stock: p.stock_level,
-            stockStatus: p.stock_level > 100 ? "in_stock" : p.stock_level > 0 ? "low_stock" : "out_of_stock",
-            image: p.images && p.images.length > 0 
-              ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `${API_BASE_URL}${p.images[0]}`) : p.images[0]) 
-              : "https://via.placeholder.com/300",
-          }));
-          setProducts(mapped);
-          setTotalPages(data.totalPages);
-          setTotalCount(data.total);
-      } catch (err) {
-        console.error("Failed to fetch catalog", err);
-      }
-    };
-    
-    // Add debounce for search
-    const timer = setTimeout(() => {
+            image: p.images?.[0] || "https://placehold.co/400x300/E7E3D8/11141C?text=Product",
+            isNew: false
+          })));
+        } catch (error) {
+          console.error("Failed to fetch catalog:", error);
+        }
+      };
       fetchProducts();
     }, 300);
     return () => clearTimeout(timer);
-  }, [page, search, category]);
+  }, [page, search, categoryId]);
 
   return (
     <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
       <NavBar />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
-        {/* Page header */}
-        <div className="mb-6">
-          <h1 className="font-display font-bold text-2xl" style={{ color: "#11141C" }}>الكتالوج</h1>
-          <p className="font-mono text-xs mt-1" style={{ color: "#8A8D9B" }}>
-            {totalCount} صنف
-          </p>
-        </div>
-
-        {/* Search + filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <svg
-              className="absolute top-1/2 -translate-y-1/2 right-3.5"
-              width="14" height="14" viewBox="0 0 14 14" fill="none"
-              style={{ color: "#8A8D9B" }}
-            >
-              <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.3" />
-              <path d="M9.5 9.5l2.5 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-            </svg>
-            <input
+      
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-4" style={{ color: "#11141C" }}>Our Products</h1>
+          <div className="relative max-w-md mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input 
+              type="text" 
+              placeholder="Search products..." 
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="بحث بالاسم أو رقم SKU..."
-              className="w-full pr-9 pl-4 py-2.5 rounded-lg text-sm outline-none font-mono"
-              style={{
-                background: "#fff",
-                border: "1.5px solid rgba(17,20,28,0.12)",
-                color: "#11141C",
-              }}
+              className="w-full pl-12 pr-4 py-3 rounded-xl outline-none"
+              style={{ background: "#fff", border: "1px solid #E7E3D8", color: "#11141C" }}
             />
           </div>
-        </div>
 
-        {/* Category filters */}
-        <div className="flex gap-2 flex-wrap mb-7">
-          {CATEGORIES.map((cat) => (
+          {/* Category filters */}
+          <div className="flex gap-2 flex-wrap mb-7">
             <button
-              key={cat}
-              onClick={() => { setCategory(cat); setPage(1); }}
+              onClick={() => { setCategoryId("all"); setPage(1); }}
               className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
               style={{
-                background: category === cat ? "#11141C" : "#E7E3D8",
-                color: category === cat ? "#F4F2EC" : "#6b7280",
+                background: categoryId === "all" ? "#11141C" : "#E7E3D8",
+                color: categoryId === "all" ? "#F4F2EC" : "#6b7280",
               }}
             >
-              {cat}
+              All Categories
             </button>
-          ))}
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => { setCategoryId(cat.id); setPage(1); }}
+                className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
+                style={{
+                  background: categoryId === cat.id ? "#11141C" : "#E7E3D8",
+                  color: categoryId === cat.id ? "#F4F2EC" : "#6b7280",
+                }}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Grid */}
-        {products.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="font-mono text-4xl mb-3" style={{ color: "#E7E3D8" }}>◻</div>
-            <p style={{ color: "#8A8D9B" }}>لا توجد نتائج لهذا البحث</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {products.map((p) => (
-              <Link
-                key={p.id}
-                to={`/catalog/${p.id}`}
-                className="group rounded-xl overflow-hidden block transition-shadow hover:shadow-md"
-                style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.08)" }}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((p) => (
+            <Link key={p.id} to={`/catalog/${p.id}`} className="block group">
+              <div 
+                className="rounded-2xl overflow-hidden transition-transform duration-300 group-hover:-translate-y-1"
+                style={{ background: "#fff", border: "1px solid #E7E3D8" }}
               >
-                <div className="relative h-48 overflow-hidden" style={{ background: "#E7E3D8" }}>
-                  <img
-                    src={p.image.startsWith('http') ? p.image : `https://images.unsplash.com/${p.image}?w=600&h=400&fit=crop&auto=format`}
-                    alt={p.nameAr}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-1.5">
-                    <span
-                      className="font-mono text-[9px] px-2 py-0.5 rounded font-semibold"
-                      style={{
-                        background: p.stockStatus === "in_stock" ? "rgba(34,197,94,0.85)" : p.stockStatus === "low_stock" ? "rgba(255,90,31,0.85)" : "rgba(138,141,155,0.85)",
-                        color: "#fff",
-                      }}
-                    >
-                      {p.stockStatus === "in_stock" ? "متوفر" : p.stockStatus === "low_stock" ? "ينفد سريعاً" : "نفد"}
+                <div className="relative aspect-[4/3] bg-gray-100 p-4 flex items-center justify-center">
+                  {p.isNew && (
+                    <span className="absolute top-3 left-3 bg-[#3A5CFF] text-white text-[10px] font-bold px-2 py-1 rounded-sm z-10">
+                      NEW
                     </span>
-                  </div>
+                  )}
+                  <img src={p.image} alt={p.nameEn} className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
                 <div className="p-4">
                   <div className="font-mono text-[10px] mb-1" style={{ color: "#3A5CFF" }}>
@@ -150,66 +129,49 @@ export default function CatalogPage() {
                   <h3 className="font-bold text-sm mb-3" style={{ color: "#11141C" }}>
                     {p.nameAr}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="font-mono font-bold text-base" style={{ color: "#FF5A1F" }}>
-                      {formatPrice(p.price)}
-                    </div>
-                    {p.originalPrice && (
-                      <div className="font-mono font-medium text-xs line-through" style={{ color: "#8A8D9B" }}>
-                        {formatPrice(p.originalPrice)}
+                  <div className="flex items-end justify-between mt-auto">
+                    <div>
+                      {p.originalPrice && (
+                        <div className="text-xs line-through" style={{ color: "#9CA3AF" }}>
+                          EGP {p.originalPrice.toFixed(2)}
+                        </div>
+                      )}
+                      <div className="font-bold text-lg" style={{ color: "#11141C" }}>
+                        EGP {p.price.toFixed(2)} <span className="text-[10px] font-normal text-gray-500">/{p.unit}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
+              </div>
+            </Link>
+          ))}
+        </div>
 
-        {/* Pagination */}
+        {/* Pagination controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-10">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+          <div className="flex justify-center items-center gap-2 mt-12">
+            <button 
               disabled={page === 1}
-              className="w-9 h-9 rounded font-mono text-sm flex items-center justify-center border transition-colors"
-              style={{
-                color: page === 1 ? "#E7E3D8" : "#11141C",
-                borderColor: page === 1 ? "#E7E3D8" : "rgba(17,20,28,0.2)",
-                background: "transparent",
-              }}
+              onClick={() => setPage(p => p - 1)}
+              className="p-2 rounded-lg border disabled:opacity-50"
+              style={{ borderColor: "#E7E3D8", background: "#fff" }}
             >
-              ›
+              <ChevronLeft className="w-5 h-5" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                onClick={() => setPage(n)}
-                className="w-9 h-9 rounded font-mono text-sm flex items-center justify-center transition-colors"
-                style={{
-                  background: n === page ? "#11141C" : "transparent",
-                  color: n === page ? "#F4F2EC" : "#8A8D9B",
-                  border: n === page ? "none" : "1px solid rgba(17,20,28,0.15)",
-                }}
-              >
-                {n}
-              </button>
-            ))}
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            <span className="text-sm font-semibold mx-4 text-gray-600">
+              Page {page} of {totalPages}
+            </span>
+            <button 
               disabled={page === totalPages}
-              className="w-9 h-9 rounded font-mono text-sm flex items-center justify-center border transition-colors"
-              style={{
-                color: page === totalPages ? "#E7E3D8" : "#11141C",
-                borderColor: page === totalPages ? "#E7E3D8" : "rgba(17,20,28,0.2)",
-                background: "transparent",
-              }}
+              onClick={() => setPage(p => p + 1)}
+              className="p-2 rounded-lg border disabled:opacity-50"
+              style={{ borderColor: "#E7E3D8", background: "#fff" }}
             >
-              ‹
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
