@@ -110,44 +110,52 @@ export default function CartPage() {
                 </div>
                 <div className="manifest-divider" style={{ borderColor: "rgba(17,20,28,0.08)" }} />
 
-                {cartItems.map(({ product: p, qty }) => (
+                {cartItems.map((i) => {
+                  const p = i.product;
+                  const qty = i.qty;
+                  const purchase_unit = i.purchase_unit;
+                  const isDozen = purchase_unit === 'dozen';
+                  const name = isDozen ? `${p.nameAr} (Dozen Pack)` : p.nameAr;
+                  const price = isDozen ? (p as any).dozenPrice : p.price;
+
+                  return (
                   <div
-                    key={p.sku}
+                    key={`${p.sku}-${purchase_unit || 'single'}`}
                     className="grid items-center py-3"
                     style={{ gridTemplateColumns: "1fr 100px 80px 80px 32px", gap: "0 8px", borderBottom: "1px solid rgba(17,20,28,0.04)" }}
                   >
                     <div>
-                      <div className="font-medium text-sm" style={{ color: "#11141C" }}>{p.nameAr}</div>
+                      <div className="font-medium text-sm" style={{ color: "#11141C" }}>{name}</div>
                       <div className="font-mono text-[10px] mt-0.5" style={{ color: "#8A8D9B" }}>{p.sku}</div>
                     </div>
                     <div className="flex items-center gap-1 justify-center">
                       <button
-                        onClick={() => updateQty(p.sku, qty - 1)}
-                        className="w-6 h-6 rounded border flex items-center justify-center text-sm"
+                        onClick={() => updateQty(p.sku, qty - 1, purchase_unit)}
+                        className="w-6 h-6 rounded border flex items-center justify-center text-sm flex-shrink-0"
                         style={{ borderColor: "rgba(17,20,28,0.15)", color: "#11141C" }}
                       >
                         −
                       </button>
-                      <span className="font-mono text-xs w-8 text-center" style={{ color: "#11141C" }}>{qty}</span>
+                      <span className="font-mono text-[10px] text-center w-full" style={{ color: "#11141C", whiteSpace: "nowrap" }}>{qty}{isDozen ? ' dozens' : ''}</span>
                       <button
-                        onClick={() => updateQty(p.sku, qty + 1)}
-                        className="w-6 h-6 rounded border flex items-center justify-center text-sm"
+                        onClick={() => updateQty(p.sku, qty + 1, purchase_unit)}
+                        className="w-6 h-6 rounded border flex items-center justify-center text-sm flex-shrink-0"
                         style={{ borderColor: "rgba(17,20,28,0.15)", color: "#11141C" }}
                       >
                         +
                       </button>
                     </div>
-                    <div className="font-mono text-xs" style={{ color: "#8A8D9B", textAlign: "left" }}>{formatPrice(p.price)}</div>
-                    <div className="font-mono text-xs font-semibold" style={{ color: "#11141C", textAlign: "left" }}>{formatPrice(p.price * qty)}</div>
+                    <div className="font-mono text-xs" style={{ color: "#8A8D9B", textAlign: "left" }}>{formatPrice(price)}</div>
+                    <div className="font-mono text-xs font-semibold" style={{ color: "#11141C", textAlign: "left" }}>{formatPrice(price * qty)}</div>
                     <button
-                      onClick={() => removeFromCart(p.sku)}
+                      onClick={() => removeFromCart(p.sku, purchase_unit)}
                       className="w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-red-50"
                       style={{ color: "#8A8D9B" }}
                     >
                       ×
                     </button>
                   </div>
-                ))}
+                )})}
               </div>
 
               {/* Footer */}
@@ -247,7 +255,8 @@ export default function CartPage() {
                     paymentMethod: paymentMethod === "cod" ? "COD" : "Credit",
                     items: cartItems.map(i => ({
                        productId: parseInt(i.product.id),
-                       quantity: i.qty
+                       quantity: i.purchase_unit === 'dozen' ? i.qty * (i.product as any).dozenQuantity : i.qty,
+                       purchase_unit: i.purchase_unit || 'single'
                     }))
                   });
                   setSubmitted(true);

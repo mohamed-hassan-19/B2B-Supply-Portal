@@ -13,6 +13,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [purchaseUnit, setPurchaseUnit] = useState<'single' | 'dozen'>('single');
 
   useEffect(() => {
     api.get(`/api/catalog/${id}`)
@@ -25,6 +26,8 @@ export default function ProductDetailPage() {
           category: p.category,
           price: Number(p.price),
           originalPrice: p.original_price ? Number(p.original_price) : undefined,
+          dozenPrice: p.dozen_price ? Number(p.dozen_price) : undefined,
+          dozenQuantity: p.dozen_quantity ? Number(p.dozen_quantity) : undefined,
           unit: "قطعة",
           stock: p.stock_level,
           stockStatus: p.stock_level > 100 ? "in_stock" : p.stock_level > 0 ? "low_stock" : "out_of_stock",
@@ -54,7 +57,7 @@ export default function ProductDetailPage() {
   }
 
   const handleAdd = () => {
-    addToCart(product, qty);
+    addToCart(product, qty, purchaseUnit);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -131,6 +134,20 @@ export default function ProductDetailPage() {
             <p className="text-sm leading-relaxed mb-7" style={{ color: "#6b7280" }}>
               {product.description}
             </p>
+
+            {/* Purchase Unit Toggle */}
+            {product.dozenPrice && product.dozenQuantity && (
+              <div className="mb-6 flex flex-col gap-2">
+                <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: purchaseUnit === 'single' ? "#FF5A1F" : "rgba(17,20,28,0.1)", background: purchaseUnit === 'single' ? "rgba(255,90,31,0.04)" : "#fff" }}>
+                  <input type="radio" name="purchaseUnit" value="single" checked={purchaseUnit === 'single'} onChange={() => setPurchaseUnit('single')} className="w-4 h-4 accent-[#FF5A1F]" />
+                  <span className="text-sm font-medium">Buy Individually ({formatPrice(product.price)} each)</span>
+                </label>
+                <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: purchaseUnit === 'dozen' ? "#FF5A1F" : "rgba(17,20,28,0.1)", background: purchaseUnit === 'dozen' ? "rgba(255,90,31,0.04)" : "#fff" }}>
+                  <input type="radio" name="purchaseUnit" value="dozen" checked={purchaseUnit === 'dozen'} onChange={() => setPurchaseUnit('dozen')} className="w-4 h-4 accent-[#FF5A1F]" />
+                  <span className="text-sm font-medium">Buy by the Dozen ({product.dozenQuantity} items — {formatPrice(product.dozenPrice)})</span>
+                </label>
+              </div>
+            )}
 
             {/* Divider */}
             <div className="manifest-divider mb-6" style={{ borderColor: "rgba(17,20,28,0.1)" }} />

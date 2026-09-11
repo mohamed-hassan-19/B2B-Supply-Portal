@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 interface CartItem {
   product: Product;
   qty: number;
+  purchase_unit?: 'single' | 'dozen';
 }
 
 interface AppContextType {
@@ -14,9 +15,9 @@ interface AppContextType {
   cartItems: CartItem[];
   login: (token: string) => void;
   logout: () => void;
-  addToCart: (product: Product, qty: number) => void;
-  removeFromCart: (sku: string) => void;
-  updateQty: (sku: string, qty: number) => void;
+  addToCart: (product: Product, qty: number, purchase_unit?: 'single' | 'dozen') => void;
+  removeFromCart: (sku: string, purchase_unit?: 'single' | 'dozen') => void;
+  updateQty: (sku: string, qty: number, purchase_unit?: 'single' | 'dozen') => void;
   cartTotal: number;
   cartCount: number;
 }
@@ -92,26 +93,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCartItems([]);
   };
 
-  const addToCart = (product: Product, qty: number) => {
+  const addToCart = (product: Product, qty: number, purchase_unit: 'single' | 'dozen' = 'single') => {
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.product.sku === product.sku);
+      const existing = prev.find((i) => i.product.sku === product.sku && i.purchase_unit === purchase_unit);
       if (existing) {
-        return prev.map((i) => i.product.sku === product.sku ? { ...i, qty: i.qty + qty } : i);
+        return prev.map((i) => i.product.sku === product.sku && i.purchase_unit === purchase_unit ? { ...i, qty: i.qty + qty } : i);
       }
-      return [...prev, { product, qty }];
+      return [...prev, { product, qty, purchase_unit }];
     });
   };
 
-  const removeFromCart = (sku: string) => {
-    setCartItems((prev) => prev.filter((i) => i.product.sku !== sku));
+  const removeFromCart = (sku: string, purchase_unit: 'single' | 'dozen' = 'single') => {
+    setCartItems((prev) => prev.filter((i) => !(i.product.sku === sku && i.purchase_unit === purchase_unit)));
   };
 
-  const updateQty = (sku: string, qty: number) => {
-    if (qty <= 0) { removeFromCart(sku); return; }
-    setCartItems((prev) => prev.map((i) => i.product.sku === sku ? { ...i, qty } : i));
+  const updateQty = (sku: string, qty: number, purchase_unit: 'single' | 'dozen' = 'single') => {
+    if (qty <= 0) { removeFromCart(sku, purchase_unit); return; }
+    setCartItems((prev) => prev.map((i) => i.product.sku === sku && i.purchase_unit === purchase_unit ? { ...i, qty } : i));
   };
 
-  const cartTotal = cartItems.reduce((sum, i) => sum + i.product.price * i.qty, 0);
+  const cartTotal = cartItems.reduce((sum, i) => {
+    const price = i.purchase_unit === 'dozen' ? (i.product as any).dozenPrice : i.product.price;
+    return sum + (price || i.product.price) * i.qty;
+  }, 0);
   const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
 
   return (
