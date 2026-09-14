@@ -20,6 +20,7 @@ export default function RegisterPage() {
     phone: "",
     contactName: "",
     city: "",
+    monthlyAvg: "",
   });
 
   const [error, setError] = useState("");
@@ -40,7 +41,8 @@ export default function RegisterPage() {
         commercial_registration: form.commercialReg,
         tax_registration: form.taxReg,
         contact_name: form.contactName,
-        contact_phone: form.phone
+        contact_phone: form.phone,
+        monthly_average_order_amount: form.monthlyAvg ? parseFloat(form.monthlyAvg) : undefined
       });
       setStep("pending");
     } catch (err: any) {
@@ -176,6 +178,10 @@ export default function RegisterPage() {
                   <option>بورسعيد</option>
                   <option>السويس</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: "#11141C" }}>Monthly Average Order Amount (Optional)</label>
+                <input type="number" step="0.01" min="0" value={form.monthlyAvg} onChange={set("monthlyAvg")} placeholder="e.g. 50000" className={inputClass} style={inputStyle} />
               </div>
             </div>
           </div>

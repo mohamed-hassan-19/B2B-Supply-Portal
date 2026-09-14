@@ -22,7 +22,8 @@ export default function InvoicesPage() {
           orderId: `ORD-${inv.order_id}`,
           date: inv.createdAt,
           dueDate: inv.due_date,
-          status: inv.status, // paid, pending, overdue
+          status: inv.payment_status || inv.status, // wait, invoice model has payment_status, maybe the API returned it as status?
+          daysRemaining: inv.days_remaining,
           total: Number(inv.amount),
           items: [] // Invoices API doesn't include items right now, just amount
         }));
@@ -104,6 +105,11 @@ export default function InvoicesPage() {
                   <div className="px-5 py-3 flex items-center justify-between">
                     <div className="text-xs" style={{ color: "#6b7280" }}>
                       تاريخ الاستحقاق: <span className="font-mono font-medium">{new Date(inv.dueDate).toLocaleDateString("ar-EG")}</span>
+                      {inv.status === 'pending' && inv.daysRemaining !== undefined && inv.daysRemaining !== null && (
+                        <div className={`mt-1 font-semibold ${inv.daysRemaining < 0 ? 'text-red-600' : 'text-gray-500'}`}>
+                          {inv.daysRemaining < 0 ? `${Math.abs(inv.daysRemaining)} days overdue` : `${inv.daysRemaining} days remaining`}
+                        </div>
+                      )}
                     </div>
                     <div className="font-mono font-bold" style={{ color: "#FF5A1F" }}>
                       {formatPrice(inv.total)}
