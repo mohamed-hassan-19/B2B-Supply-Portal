@@ -61,12 +61,12 @@ export default function CatalogPage() {
   }, [page, search, categoryId]);
 
   return (
-    <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
+    <div style={{ background: "#FAF7EE", minHeight: "100vh" }}>
       <NavBar />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4" style={{ color: "#11141C" }}>Our Products</h1>
+          <h1 className="text-3xl font-bold mb-4" style={{ color: "#1A1F2E" }}>Our Products</h1>
           <div className="relative max-w-md mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input 
@@ -75,7 +75,7 @@ export default function CatalogPage() {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="w-full pl-12 pr-4 py-3 rounded-xl outline-none"
-              style={{ background: "#fff", border: "1px solid #E7E3D8", color: "#11141C" }}
+              style={{ background: "#fff", border: "1px solid #EDE8D5", color: "#1A1F2E" }}
             />
           </div>
 
@@ -85,8 +85,8 @@ export default function CatalogPage() {
               onClick={() => { setCategoryId("all"); setPage(1); }}
               className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
               style={{
-                background: categoryId === "all" ? "#11141C" : "#E7E3D8",
-                color: categoryId === "all" ? "#F4F2EC" : "#6b7280",
+                background: categoryId === "all" ? "#1A1F2E" : "#EDE8D5",
+                color: categoryId === "all" ? "#FAF7EE" : "#6b7280",
               }}
             >
               All Categories
@@ -97,8 +97,8 @@ export default function CatalogPage() {
                 onClick={() => { setCategoryId(cat.id); setPage(1); }}
                 className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
                 style={{
-                  background: categoryId === cat.id ? "#11141C" : "#E7E3D8",
-                  color: categoryId === cat.id ? "#F4F2EC" : "#6b7280",
+                  background: categoryId === cat.id ? "#1A1F2E" : "#EDE8D5",
+                  color: categoryId === cat.id ? "#FAF7EE" : "#6b7280",
                 }}
               >
                 {cat.name}
@@ -112,7 +112,7 @@ export default function CatalogPage() {
             <Link key={p.id} to={`/catalog/${p.id}`} className="block group">
               <div 
                 className="rounded-2xl overflow-hidden transition-transform duration-300 group-hover:-translate-y-1"
-                style={{ background: "#fff", border: "1px solid #E7E3D8" }}
+                style={{ background: "#fff", border: "1px solid #EDE8D5" }}
               >
                 <div className="relative aspect-[4/3] bg-gray-100 p-4 flex items-center justify-center">
                   {p.isNew && (
@@ -126,7 +126,7 @@ export default function CatalogPage() {
                   <div className="font-mono text-[10px] mb-1" style={{ color: "#3A5CFF" }}>
                     {p.sku} • {p.category}
                   </div>
-                  <h3 className="font-bold text-sm mb-3" style={{ color: "#11141C" }}>
+                  <h3 className="font-bold text-sm mb-3" style={{ color: "#1A1F2E" }}>
                     {p.nameAr}
                   </h3>
                   <div className="flex items-end justify-between mt-auto">
@@ -136,7 +136,7 @@ export default function CatalogPage() {
                           EGP {p.originalPrice.toFixed(2)}
                         </div>
                       )}
-                      <div className="font-bold text-lg" style={{ color: "#11141C" }}>
+                      <div className="font-bold text-lg" style={{ color: "#1A1F2E" }}>
                         EGP {p.price.toFixed(2)} <span className="text-[10px] font-normal text-gray-500">/{p.unit}</span>
                       </div>
                     </div>
@@ -154,7 +154,7 @@ export default function CatalogPage() {
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
               className="p-2 rounded-lg border disabled:opacity-50"
-              style={{ borderColor: "#E7E3D8", background: "#fff" }}
+              style={{ borderColor: "#EDE8D5", background: "#fff" }}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -165,7 +165,7 @@ export default function CatalogPage() {
               disabled={page === totalPages}
               onClick={() => setPage(p => p + 1)}
               className="p-2 rounded-lg border disabled:opacity-50"
-              style={{ borderColor: "#E7E3D8", background: "#fff" }}
+              style={{ borderColor: "#EDE8D5", background: "#fff" }}
             >
               <ChevronRight className="w-5 h-5" />
             </button>

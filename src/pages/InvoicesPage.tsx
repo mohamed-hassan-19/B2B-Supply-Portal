@@ -47,7 +47,7 @@ export default function InvoicesPage() {
 
   if (selected && invoice) {
     return (
-      <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
+      <div style={{ background: "#FAF7EE", minHeight: "100vh" }}>
         <NavBar />
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
           <div className="flex justify-between items-center mb-6">
@@ -75,10 +75,10 @@ export default function InvoicesPage() {
   }
 
   return (
-    <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
+    <div style={{ background: "#FAF7EE", minHeight: "100vh" }}>
       <NavBar />
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
-        <h1 className="font-display font-bold text-2xl mb-2" style={{ color: "#11141C" }}>الفواتير</h1>
+        <h1 className="font-display font-bold text-2xl mb-2" style={{ color: "#1A1F2E" }}>الفواتير</h1>
         {loading ? (
           <p className="font-mono text-xs mb-7" style={{ color: "#8A8D9B" }}>جاري التحميل...</p>
         ) : (
@@ -90,14 +90,14 @@ export default function InvoicesPage() {
                 <div
                   key={inv.id}
                   className="rounded-xl overflow-hidden cursor-pointer transition-shadow hover:shadow-md"
-                  style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.08)" }}
+                  style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.08)" }}
                   onClick={() => setSelected(inv.id)}
                 >
-                  <div className="relative px-5 py-4" style={{ borderBottom: "1px solid rgba(17,20,28,0.06)" }}>
+                  <div className="relative px-5 py-4" style={{ borderBottom: "1px solid rgba(26,31,46,0.06)" }}>
                     <div className="absolute top-4 left-4">
                       <StampBadge status={invStatus(inv.status)} label={statusLabels[invStatus(inv.status)] || inv.status} size="sm" />
                     </div>
-                    <div className="font-mono text-xs font-semibold" style={{ color: "#11141C" }}>{inv.id}</div>
+                    <div className="font-mono text-xs font-semibold" style={{ color: "#1A1F2E" }}>{inv.id}</div>
                     <div className="font-mono text-[10px] mt-0.5" style={{ color: "#8A8D9B" }}>
                       مرتبط بـ {inv.orderId}
                     </div>
@@ -111,7 +111,7 @@ export default function InvoicesPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-mono font-bold" style={{ color: "#FF5A1F" }}>
+                    <div className="font-mono font-bold" style={{ color: "#FFC629" }}>
                       {formatPrice(inv.total)}
                     </div>
                   </div>
@@ -122,14 +122,14 @@ export default function InvoicesPage() {
             {/* Summary */}
             <div
               className="mt-6 rounded-xl p-5"
-              style={{ background: "#11141C", border: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ background: "#1A1F2E", border: "1px solid rgba(255,255,255,0.06)" }}
             >
               <div className="font-mono text-[10px] mb-3 uppercase" style={{ color: "#8A8D9B" }}>ملخص الفواتير</div>
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { label: "مسددة", val: invoices.filter((i) => i.status === "paid").reduce((s, i) => s + i.total, 0), color: "#16a34a" },
                   { label: "قيد الانتظار", val: invoices.filter((i) => i.status === "pending").reduce((s, i) => s + i.total, 0), color: "#8A8D9B" },
-                  { label: "متأخرة", val: invoices.filter((i) => i.status === "overdue").reduce((s, i) => s + i.total, 0), color: "#FF5A1F" },
+                  { label: "متأخرة", val: invoices.filter((i) => i.status === "overdue").reduce((s, i) => s + i.total, 0), color: "#FFC629" },
                 ].map((s) => (
                   <div key={s.label} className="text-center">
                     <div className="font-mono font-bold text-sm" style={{ color: s.color }}>

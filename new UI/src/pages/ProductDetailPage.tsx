@@ -1,49 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { formatPrice } from "../data/mockData";
+import { PRODUCTS, formatPrice } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import NavBar from "../components/NavBar";
-import { api, API_BASE_URL } from "../lib/api";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useApp();
-  const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const product = PRODUCTS.find((p) => p.id === id);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [purchaseUnit, setPurchaseUnit] = useState<'single' | 'dozen'>('single');
-
-  useEffect(() => {
-    api.get(`/api/catalog/${id}`)
-      .then(res => {
-        const p = res.data;
-        setProduct({
-          id: String(p.id),
-          sku: p.sku || `SKU-${p.id}`,
-          nameAr: p.name,
-          category: p.category,
-          price: Number(p.price),
-          originalPrice: p.original_price ? Number(p.original_price) : undefined,
-          dozenPrice: p.dozen_price ? Number(p.dozen_price) : undefined,
-          dozenQuantity: p.dozen_quantity ? Number(p.dozen_quantity) : undefined,
-          unit: "قطعة",
-          stock: p.stock_level,
-          stockStatus: p.stock_level > 100 ? "in_stock" : p.stock_level > 0 ? "low_stock" : "out_of_stock",
-          image: p.images && p.images.length > 0 
-            ? (p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `${API_BASE_URL}${p.images[0]}`) : p.images[0]) 
-            : "https://via.placeholder.com/300",
-          description: p.description
-        });
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [id]);
-
-  if (loading) {
-    return <div style={{ background: "#FAF7EE", minHeight: "100vh" }}><NavBar /><div className="text-center py-20">جاري التحميل...</div></div>;
-  }
 
   if (!product) {
     return (
@@ -57,7 +24,7 @@ export default function ProductDetailPage() {
   }
 
   const handleAdd = () => {
-    addToCart(product, qty, purchaseUnit);
+    addToCart(product, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -84,7 +51,7 @@ export default function ProductDetailPage() {
             style={{ background: "#EDE8D5", maxHeight: "480px" }}
           >
             <img
-              src={product.image.startsWith('http') ? product.image : `https://images.unsplash.com/${product.image}?w=800&h=800&fit=crop&auto=format`}
+              src={`https://images.unsplash.com/${product.image}?w=800&h=800&fit=crop&auto=format`}
               alt={product.nameAr}
               className="w-full h-full object-cover"
             />
@@ -103,15 +70,11 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Price */}
-            <div className="flex items-center gap-3 mb-4">
-              <span className="font-mono font-bold text-3xl" style={{ color: "#FFC629" }}>
+            <div className="flex items-baseline gap-2 mb-4">
+              <span className="font-mono font-bold text-3xl" style={{ color: "#1A1F2E" }}>
                 {formatPrice(product.price)}
               </span>
-              {product.originalPrice && (
-                <span className="font-mono text-lg line-through" style={{ color: "#8A8D9B" }}>
-                  {formatPrice(product.originalPrice)}
-                </span>
-              )}
+              <span className="font-mono text-sm" style={{ color: "#8A8D9B" }}>/ {product.unit}</span>
             </div>
 
             {/* Stock */}
@@ -135,28 +98,14 @@ export default function ProductDetailPage() {
               {product.description}
             </p>
 
-            {/* Purchase Unit Toggle */}
-            {product.dozenPrice && product.dozenQuantity && (
-              <div className="mb-6 flex flex-col gap-2">
-                <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: purchaseUnit === 'single' ? "#FFC629" : "rgba(26,31,46,0.1)", background: purchaseUnit === 'single' ? "rgba(255,198,41,0.04)" : "#fff" }}>
-                  <input type="radio" name="purchaseUnit" value="single" checked={purchaseUnit === 'single'} onChange={() => setPurchaseUnit('single')} className="w-4 h-4 accent-[#FFC629]" />
-                  <span className="text-sm font-medium">Buy Individually ({formatPrice(product.price)} each)</span>
-                </label>
-                <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors" style={{ borderColor: purchaseUnit === 'dozen' ? "#FFC629" : "rgba(26,31,46,0.1)", background: purchaseUnit === 'dozen' ? "rgba(255,198,41,0.04)" : "#fff" }}>
-                  <input type="radio" name="purchaseUnit" value="dozen" checked={purchaseUnit === 'dozen'} onChange={() => setPurchaseUnit('dozen')} className="w-4 h-4 accent-[#FFC629]" />
-                  <span className="text-sm font-medium">Buy by the Dozen ({product.dozenQuantity} items — {formatPrice(product.dozenPrice)})</span>
-                </label>
-              </div>
-            )}
-
             {/* Divider */}
-            <div className="manifest-divider mb-6" style={{ borderColor: "rgba(26,31,46,0.1)" }} />
+            <div className="manifest-divider mb-6" style={{ borderColor: "rgba(17,20,28,0.1)" }} />
 
             {/* Quantity + Add to cart */}
             <div className="flex items-center gap-4 mb-4">
               <div
                 className="flex items-center gap-0 rounded-lg overflow-hidden border"
-                style={{ borderColor: "rgba(26,31,46,0.15)" }}
+                style={{ borderColor: "rgba(17,20,28,0.15)" }}
               >
                 <button
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -167,7 +116,7 @@ export default function ProductDetailPage() {
                 </button>
                 <span
                   className="w-14 h-10 flex items-center justify-center font-mono font-semibold text-sm border-x"
-                  style={{ borderColor: "rgba(26,31,46,0.15)", color: "#1A1F2E" }}
+                  style={{ borderColor: "rgba(17,20,28,0.15)", color: "#1A1F2E" }}
                 >
                   {qty}
                 </span>
@@ -196,7 +145,7 @@ export default function ProductDetailPage() {
             <button
               onClick={() => navigate("/catalog")}
               className="py-2.5 rounded-lg text-sm font-medium border transition-colors hover:bg-black/5"
-              style={{ color: "#6b7280", borderColor: "rgba(26,31,46,0.12)", background: "transparent" }}
+              style={{ color: "#6b7280", borderColor: "rgba(17,20,28,0.12)", background: "transparent" }}
             >
               العودة للكتالوج
             </button>

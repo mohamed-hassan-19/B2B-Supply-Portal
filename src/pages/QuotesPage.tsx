@@ -34,7 +34,7 @@ export default function QuotesPage() {
           nameAr: i.product_name,
           qty: i.quantity,
           unit: "قطعة",
-          unitPrice: Number(i.unit_price)
+          unitPrice: Number(i.unit_price), isCancelled: !!i.is_cancelled
         })) || []
       }));
       setQuotes(mapped);
@@ -52,7 +52,7 @@ export default function QuotesPage() {
     const canAct = currentStatus === "sent";
 
     return (
-      <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
+      <div style={{ background: "#FAF7EE", minHeight: "100vh" }}>
         <NavBar />
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
           <button
@@ -88,17 +88,17 @@ export default function QuotesPage() {
           {showPayment === quote.id && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center px-4"
-              style={{ background: "rgba(17,20,28,0.7)" }}
+              style={{ background: "rgba(26,31,46,0.7)" }}
             >
               <div
                 className="w-full max-w-sm rounded-2xl p-6"
-                style={{ background: "#F4F2EC" }}
+                style={{ background: "#FAF7EE" }}
               >
-                <h3 className="font-display font-bold text-lg mb-1" style={{ color: "#11141C" }}>
+                <h3 className="font-display font-bold text-lg mb-1" style={{ color: "#1A1F2E" }}>
                   قبول العرض
                 </h3>
                 <div className="font-mono text-xs mb-4" style={{ color: "#8A8D9B" }}>{quote.id}</div>
-                <div className="manifest-divider mb-4" style={{ borderColor: "rgba(17,20,28,0.1)" }} />
+                <div className="manifest-divider mb-4" style={{ borderColor: "rgba(26,31,46,0.1)" }} />
 
                 <p className="text-sm mb-4" style={{ color: "#6b7280" }}>اختر طريقة الدفع لهذا العرض:</p>
                 <div className="flex flex-col gap-2 mb-5">
@@ -111,18 +111,18 @@ export default function QuotesPage() {
                       onClick={() => setPayment(opt.val)}
                       className="flex items-center gap-3 p-3 rounded-lg border-2 text-right transition-all"
                       style={{
-                        borderColor: payment === opt.val ? "#FF5A1F" : "rgba(17,20,28,0.12)",
-                        background: payment === opt.val ? "rgba(255,90,31,0.06)" : "#fff",
+                        borderColor: payment === opt.val ? "#FFC629" : "rgba(26,31,46,0.12)",
+                        background: payment === opt.val ? "rgba(255,198,41,0.06)" : "#fff",
                       }}
                     >
                       <div
                         className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-                        style={{ borderColor: payment === opt.val ? "#FF5A1F" : "rgba(17,20,28,0.2)" }}
+                        style={{ borderColor: payment === opt.val ? "#FFC629" : "rgba(26,31,46,0.2)" }}
                       >
-                        {payment === opt.val && <div className="w-2 h-2 rounded-full" style={{ background: "#FF5A1F" }} />}
+                        {payment === opt.val && <div className="w-2 h-2 rounded-full" style={{ background: "#FFC629" }} />}
                       </div>
                       <div>
-                        <div className="text-xs font-semibold" style={{ color: "#11141C" }}>{opt.label}</div>
+                        <div className="text-xs font-semibold" style={{ color: "#1A1F2E" }}>{opt.label}</div>
                         <div className="font-mono text-[9px]" style={{ color: "#3A5CFF" }}>{opt.sub}</div>
                       </div>
                     </button>
@@ -143,14 +143,14 @@ export default function QuotesPage() {
                       }
                     }}
                     className="flex-1 py-2.5 rounded-lg font-bold text-sm"
-                    style={{ background: "#FF5A1F", color: "#fff" }}
+                    style={{ background: "#FFC629", color: "#fff" }}
                   >
                     تأكيد القبول — {formatPrice(quote.total)}
                   </button>
                   <button
                     onClick={() => setShowPayment(null)}
                     className="px-4 py-2.5 rounded-lg text-sm border"
-                    style={{ color: "#6b7280", borderColor: "rgba(17,20,28,0.15)", background: "transparent" }}
+                    style={{ color: "#6b7280", borderColor: "rgba(26,31,46,0.15)", background: "transparent" }}
                   >
                     إلغاء
                   </button>
@@ -163,10 +163,10 @@ export default function QuotesPage() {
           {quote.notes && (
             <div
               className="mt-4 rounded-xl p-4"
-              style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
+              style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
             >
               <div className="font-mono text-[10px] mb-1.5" style={{ color: "#8A8D9B" }}>ملاحظات</div>
-              <p className="text-sm" style={{ color: "#11141C" }}>{quote.notes}</p>
+              <p className="text-sm" style={{ color: "#1A1F2E" }}>{quote.notes}</p>
             </div>
           )}
         </div>
@@ -175,10 +175,10 @@ export default function QuotesPage() {
   }
 
   return (
-    <div style={{ background: "#F4F2EC", minHeight: "100vh" }}>
+    <div style={{ background: "#FAF7EE", minHeight: "100vh" }}>
       <NavBar />
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
-        <h1 className="font-display font-bold text-2xl mb-2" style={{ color: "#11141C" }}>عروض الأسعار</h1>
+        <h1 className="font-display font-bold text-2xl mb-2" style={{ color: "#1A1F2E" }}>عروض الأسعار</h1>
         {loading ? (
           <p className="font-mono text-xs mb-7" style={{ color: "#8A8D9B" }}>جاري التحميل...</p>
         ) : (
@@ -192,14 +192,14 @@ export default function QuotesPage() {
                   <div
                     key={q.id}
                     className="rounded-xl overflow-hidden cursor-pointer transition-shadow hover:shadow-md"
-                    style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.08)" }}
+                    style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.08)" }}
                     onClick={() => setSelected(q.id)}
                   >
-                    <div className="relative px-5 py-4" style={{ borderBottom: "1px solid rgba(17,20,28,0.06)" }}>
+                    <div className="relative px-5 py-4" style={{ borderBottom: "1px solid rgba(26,31,46,0.06)" }}>
                       <div className="absolute top-4 left-4">
                         <StampBadge status={st} label={statusLabels[st] || st} size="sm" />
                       </div>
-                      <div className="font-mono text-xs font-semibold flex items-center gap-2" style={{ color: "#FF5A1F" }}>
+                      <div className="font-mono text-xs font-semibold flex items-center gap-2" style={{ color: "#FFC629" }}>
                         {q.id}
                         {q.relatedOrderId && (
                           <span className="px-2 py-0.5 rounded text-[10px] font-medium" style={{ background: "#fef3c7", color: "#b45309" }}>
@@ -215,7 +215,7 @@ export default function QuotesPage() {
                       <div className="text-xs" style={{ color: "#6b7280" }}>
                         {q.items.length} صنف
                       </div>
-                      <div className="font-mono font-bold" style={{ color: "#FF5A1F" }}>
+                      <div className="font-mono font-bold" style={{ color: "#FFC629" }}>
                         {formatPrice(q.total)}
                       </div>
                     </div>

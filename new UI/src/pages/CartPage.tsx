@@ -4,7 +4,6 @@ import { useApp } from "../context/AppContext";
 import { formatPrice } from "../data/mockData";
 import NavBar from "../components/NavBar";
 import StampBadge from "../components/StampBadge";
-import { api } from "../lib/api";
 
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQty, cartTotal, isCreditApproved } = useApp();
@@ -31,7 +30,7 @@ export default function CartPage() {
           <h2 className="font-display font-bold text-2xl mb-3" style={{ color: "#1A1F2E" }}>
             تم تأكيد طلبك
           </h2>
-          <div className="font-mono text-sm mb-2" style={{ color: "#FFC629" }}>{orderId}</div>
+          <div className="font-mono text-sm mb-2" style={{ color: "#1A1F2E" }}>{orderId}</div>
           <p className="text-sm mb-8" style={{ color: "#8A8D9B" }}>
             سيصلك تأكيد بالبريد الإلكتروني وسنتواصل معك لتحديد موعد التسليم.
           </p>
@@ -39,14 +38,14 @@ export default function CartPage() {
             <Link
               to="/orders"
               className="px-5 py-2.5 rounded-lg font-semibold text-sm"
-              style={{ background: "#FFC629", color: "#fff" }}
+              style={{ background: "#FFC629", color: "#1A1F2E" }}
             >
               متابعة الطلبات
             </Link>
             <Link
               to="/catalog"
               className="px-5 py-2.5 rounded-lg font-semibold text-sm border"
-              style={{ color: "#6b7280", borderColor: "rgba(26,31,46,0.15)", background: "transparent" }}
+              style={{ color: "#6b7280", borderColor: "rgba(17,20,28,0.15)", background: "transparent" }}
             >
               مواصلة التسوق
             </Link>
@@ -67,7 +66,7 @@ export default function CartPage() {
           <Link
             to="/catalog"
             className="inline-block px-6 py-2.5 rounded-lg font-semibold text-sm"
-            style={{ background: "#FFC629", color: "#fff" }}
+            style={{ background: "#FFC629", color: "#1A1F2E" }}
           >
             تصفح الكتالوج
           </Link>
@@ -87,11 +86,11 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <div
               className="rounded-xl overflow-hidden"
-              style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
+              style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
             >
               {/* Header */}
-              <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(26,31,46,0.08)" }}>
-                <div className="font-mono text-xs font-semibold" style={{ color: "#FFC629" }}>
+              <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(17,20,28,0.08)" }}>
+                <div className="font-mono text-xs font-semibold" style={{ color: "#1A1F2E" }}>
                   طلب جديد — {new Date().toLocaleDateString("ar-EG")}
                 </div>
               </div>
@@ -108,54 +107,46 @@ export default function CartPage() {
                   <span className="text-left">الإجمالي</span>
                   <span />
                 </div>
-                <div className="manifest-divider" style={{ borderColor: "rgba(26,31,46,0.08)" }} />
+                <div className="manifest-divider" style={{ borderColor: "rgba(17,20,28,0.08)" }} />
 
-                {cartItems.map((i) => {
-                  const p = i.product;
-                  const qty = i.qty;
-                  const purchase_unit = i.purchase_unit;
-                  const isDozen = purchase_unit === 'dozen';
-                  const name = isDozen ? `${p.nameAr} (Dozen Pack)` : p.nameAr;
-                  const price = isDozen ? (p as any).dozenPrice : p.price;
-
-                  return (
+                {cartItems.map(({ product: p, qty }) => (
                   <div
-                    key={`${p.sku}-${purchase_unit || 'single'}`}
+                    key={p.sku}
                     className="grid items-center py-3"
-                    style={{ gridTemplateColumns: "1fr 100px 80px 80px 32px", gap: "0 8px", borderBottom: "1px solid rgba(26,31,46,0.04)" }}
+                    style={{ gridTemplateColumns: "1fr 100px 80px 80px 32px", gap: "0 8px", borderBottom: "1px solid rgba(17,20,28,0.04)" }}
                   >
                     <div>
-                      <div className="font-medium text-sm" style={{ color: "#1A1F2E" }}>{name}</div>
+                      <div className="font-medium text-sm" style={{ color: "#1A1F2E" }}>{p.nameAr}</div>
                       <div className="font-mono text-[10px] mt-0.5" style={{ color: "#8A8D9B" }}>{p.sku}</div>
                     </div>
                     <div className="flex items-center gap-1 justify-center">
                       <button
-                        onClick={() => updateQty(p.sku, qty - 1, purchase_unit)}
-                        className="w-6 h-6 rounded border flex items-center justify-center text-sm flex-shrink-0"
-                        style={{ borderColor: "rgba(26,31,46,0.15)", color: "#1A1F2E" }}
+                        onClick={() => updateQty(p.sku, qty - 1)}
+                        className="w-6 h-6 rounded border flex items-center justify-center text-sm"
+                        style={{ borderColor: "rgba(17,20,28,0.15)", color: "#1A1F2E" }}
                       >
                         −
                       </button>
-                      <span className="font-mono text-[10px] text-center w-full" style={{ color: "#1A1F2E", whiteSpace: "nowrap" }}>{qty}{isDozen ? ' dozens' : ''}</span>
+                      <span className="font-mono text-xs w-8 text-center" style={{ color: "#1A1F2E" }}>{qty}</span>
                       <button
-                        onClick={() => updateQty(p.sku, qty + 1, purchase_unit)}
-                        className="w-6 h-6 rounded border flex items-center justify-center text-sm flex-shrink-0"
-                        style={{ borderColor: "rgba(26,31,46,0.15)", color: "#1A1F2E" }}
+                        onClick={() => updateQty(p.sku, qty + 1)}
+                        className="w-6 h-6 rounded border flex items-center justify-center text-sm"
+                        style={{ borderColor: "rgba(17,20,28,0.15)", color: "#1A1F2E" }}
                       >
                         +
                       </button>
                     </div>
-                    <div className="font-mono text-xs" style={{ color: "#8A8D9B", textAlign: "left" }}>{formatPrice(price)}</div>
-                    <div className="font-mono text-xs font-semibold" style={{ color: "#1A1F2E", textAlign: "left" }}>{formatPrice(price * qty)}</div>
+                    <div className="font-mono text-xs" style={{ color: "#8A8D9B", textAlign: "left" }}>{formatPrice(p.price)}</div>
+                    <div className="font-mono text-xs font-semibold" style={{ color: "#1A1F2E", textAlign: "left" }}>{formatPrice(p.price * qty)}</div>
                     <button
-                      onClick={() => removeFromCart(p.sku, purchase_unit)}
+                      onClick={() => removeFromCart(p.sku)}
                       className="w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-red-50"
                       style={{ color: "#8A8D9B" }}
                     >
                       ×
                     </button>
                   </div>
-                )})}
+                ))}
               </div>
 
               {/* Footer */}
@@ -181,7 +172,7 @@ export default function CartPage() {
             {/* Payment method */}
             <div
               className="rounded-xl p-5"
-              style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
+              style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
             >
               <div className="font-mono text-[10px] font-semibold uppercase mb-3" style={{ color: "#8A8D9B" }}>
                 طريقة الدفع
@@ -198,8 +189,8 @@ export default function CartPage() {
                     onClick={() => opt.available && setPaymentMethod(opt.val)}
                     className="flex items-center gap-3 p-3 rounded-lg border-2 text-right transition-all"
                     style={{
-                      borderColor: paymentMethod === opt.val ? "#FFC629" : "rgba(26,31,46,0.1)",
-                      background: paymentMethod === opt.val ? "rgba(255,198,41,0.04)" : "transparent",
+                      borderColor: paymentMethod === opt.val ? "#FFC629" : "rgba(17,20,28,0.1)",
+                      background: paymentMethod === opt.val ? "rgba(255,90,31,0.04)" : "transparent",
                       opacity: opt.available ? 1 : 0.4,
                       cursor: opt.available ? "pointer" : "not-allowed",
                     }}
@@ -207,7 +198,7 @@ export default function CartPage() {
                     <div
                       className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
                       style={{
-                        borderColor: paymentMethod === opt.val ? "#FFC629" : "rgba(26,31,46,0.2)",
+                        borderColor: paymentMethod === opt.val ? "#FFC629" : "rgba(17,20,28,0.2)",
                       }}
                     >
                       {paymentMethod === opt.val && (
@@ -228,7 +219,7 @@ export default function CartPage() {
             {/* Summary */}
             <div
               className="rounded-xl p-5"
-              style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
+              style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
             >
               <div className="font-mono text-[10px] font-semibold uppercase mb-3" style={{ color: "#8A8D9B" }}>
                 ملخص الطلب
@@ -241,31 +232,17 @@ export default function CartPage() {
                 <span style={{ color: "#6b7280" }}>الشحن</span>
                 <span className="font-mono text-xs" style={{ color: "#3A5CFF" }}>يُحدد لاحقاً</span>
               </div>
-              <div className="manifest-divider mb-3" style={{ borderColor: "rgba(26,31,46,0.1)" }} />
+              <div className="manifest-divider mb-3" style={{ borderColor: "rgba(17,20,28,0.1)" }} />
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-sm" style={{ color: "#1A1F2E" }}>الإجمالي</span>
-                <span className="font-mono font-bold text-lg" style={{ color: "#FFC629" }}>{formatPrice(cartTotal)}</span>
+                <span className="font-mono font-bold text-lg" style={{ color: "#1A1F2E" }}>{formatPrice(cartTotal)}</span>
               </div>
             </div>
 
             <button
-              onClick={async () => {
-                try {
-                  await api.post('/api/storefront/orders', {
-                    paymentMethod: paymentMethod === "cod" ? "COD" : "Credit",
-                    items: cartItems.map(i => ({
-                       productId: parseInt(i.product.id),
-                       quantity: i.purchase_unit === 'dozen' ? i.qty * (i.product as any).dozenQuantity : i.qty,
-                       purchase_unit: i.purchase_unit || 'single'
-                    }))
-                  });
-                  setSubmitted(true);
-                } catch (err: any) {
-                  alert("Failed to submit order: " + (err.response?.data?.message || err.message));
-                }
-              }}
+              onClick={() => setSubmitted(true)}
               className="w-full py-3.5 rounded-xl font-bold text-sm transition-opacity hover:opacity-90"
-              style={{ background: "#FFC629", color: "#fff" }}
+              style={{ background: "#FFC629", color: "#1A1F2E" }}
             >
               تأكيد الطلب
             </button>

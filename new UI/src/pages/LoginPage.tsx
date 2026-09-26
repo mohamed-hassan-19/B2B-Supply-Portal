@@ -1,31 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { Eye, EyeOff } from 'lucide-react';
-import { api } from "../lib/api";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const { login } = useApp();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-    try {
-      const res = await api.post("/api/client/auth/login", { email, password });
-      login(res.data.access_token);
+    setTimeout(() => {
+      login();
       navigate("/catalog");
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message);
-    } finally {
-      setLoading(false);
-    }
+    }, 800);
   };
 
   return (
@@ -48,7 +38,7 @@ export default function LoginPage() {
 
       <div
         className="w-full max-w-md rounded-xl p-8"
-        style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)", boxShadow: "0 4px 24px rgba(26,31,46,0.06)" }}
+        style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)", boxShadow: "0 4px 24px rgba(17,20,28,0.06)" }}
       >
         <h1 className="font-display font-bold text-2xl mb-1" style={{ color: "#1A1F2E" }}>
           تسجيل الدخول
@@ -56,8 +46,6 @@ export default function LoginPage() {
         <p className="text-sm mb-7" style={{ color: "#8A8D9B" }}>
           مرحباً بك في منصة Masnood للمشتريات
         </p>
-
-        {error && <div className="mb-4 rounded p-3 text-sm" style={{ background: "#FFEBEB", color: "#E02D2D" }}>{error}</div>}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
@@ -70,15 +58,14 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="info@company.com"
               required
-              dir="ltr"
-              className="w-full px-3.5 py-2.5 rounded-lg text-sm outline-none transition-all font-mono text-left"
+              className="w-full px-3.5 py-2.5 rounded-lg text-sm outline-none transition-all font-mono"
               style={{
                 background: "#FAF7EE",
-                border: "1.5px solid rgba(26,31,46,0.15)",
+                border: "1.5px solid rgba(17,20,28,0.15)",
                 color: "#1A1F2E",
               }}
               onFocus={(e) => (e.target.style.borderColor = "#FFC629")}
-              onBlur={(e) => (e.target.style.borderColor = "rgba(26,31,46,0.15)")}
+              onBlur={(e) => (e.target.style.borderColor = "rgba(17,20,28,0.15)")}
             />
           </div>
 
@@ -87,32 +74,25 @@ export default function LoginPage() {
               <label className="text-xs font-semibold" style={{ color: "#1A1F2E" }}>
                 كلمة المرور
               </label>
-            </div>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                dir="ltr"
-                className="w-full px-3.5 py-2.5 rounded-lg text-sm outline-none transition-all pr-10 text-left"
-                style={{
-                  background: "#FAF7EE",
-                  border: "1.5px solid rgba(26,31,46,0.15)",
-                  color: "#1A1F2E",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "#FFC629")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(26,31,46,0.15)")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              <button type="button" className="text-xs" style={{ color: "#3A5CFF" }}>
+                نسيت كلمة المرور؟
               </button>
             </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full px-3.5 py-2.5 rounded-lg text-sm outline-none transition-all"
+              style={{
+                background: "#FAF7EE",
+                border: "1.5px solid rgba(17,20,28,0.15)",
+                color: "#1A1F2E",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#FFC629")}
+              onBlur={(e) => (e.target.style.borderColor = "rgba(17,20,28,0.15)")}
+            />
           </div>
 
           <button
@@ -125,7 +105,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="manifest-divider mt-6 mb-5" style={{ borderColor: "rgba(26,31,46,0.1)", borderTopWidth: "1px" }} />
+        <div className="manifest-divider mt-6 mb-5" style={{ borderColor: "rgba(17,20,28,0.1)" }} />
 
         <p className="text-center text-sm" style={{ color: "#8A8D9B" }}>
           ليس لديك حساب؟{" "}

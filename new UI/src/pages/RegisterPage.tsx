@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Eye, EyeOff } from 'lucide-react';
-import { api } from "../lib/api";
 
 type PaymentPref = "cod" | "credit" | "";
 type Step = "form" | "pending";
@@ -9,7 +7,6 @@ type Step = "form" | "pending";
 export default function RegisterPage() {
   const [step, setStep] = useState<Step>("form");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [paymentPref, setPaymentPref] = useState<PaymentPref>("");
   const [form, setForm] = useState({
     companyName: "",
@@ -20,41 +17,23 @@ export default function RegisterPage() {
     phone: "",
     contactName: "",
     city: "",
-    monthlyAvg: "",
   });
-
-  const [error, setError] = useState("");
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-
-    try {
-      await api.post("/api/client/auth/register", {
-        company_name: form.companyName,
-        email: form.email,
-        password: form.password,
-        commercial_registration: form.commercialReg,
-        tax_registration: form.taxReg,
-        contact_name: form.contactName,
-        contact_phone: form.phone,
-        monthly_average_order_amount: form.monthlyAvg ? parseFloat(form.monthlyAvg) : undefined
-      });
-      setStep("pending");
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message);
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      setStep("pending");
+    }, 1200);
   };
 
   const inputStyle = {
     background: "#FAF7EE",
-    border: "1.5px solid rgba(26,31,46,0.15)",
+    border: "1.5px solid rgba(17,20,28,0.15)",
     color: "#1A1F2E",
   };
 
@@ -68,11 +47,11 @@ export default function RegisterPage() {
       >
         <div
           className="w-full max-w-md rounded-xl p-10 text-center"
-          style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
+          style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
         >
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-            style={{ background: "rgba(255,198,41,0.1)" }}
+            style={{ background: "rgba(255,90,31,0.1)" }}
           >
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M14 3l2 6h6l-5 3.5 2 6L14 15l-5 3.5 2-6L6 9h6l2-6z" stroke="#FFC629" strokeWidth="1.5" strokeLinejoin="round" />
@@ -80,7 +59,7 @@ export default function RegisterPage() {
           </div>
           <div
             className="stamp-badge inline-block px-4 py-1.5 mb-5 font-mono text-xs font-bold tracking-widest uppercase rounded border"
-            style={{ background: "rgba(255,198,41,0.1)", color: "#FFC629", borderColor: "rgba(255,198,41,0.4)" }}
+            style={{ background: "rgba(255,90,31,0.1)", color: "#FFC629", borderColor: "rgba(255,90,31,0.4)" }}
           >
             قيد المراجعة
           </div>
@@ -92,7 +71,7 @@ export default function RegisterPage() {
           </p>
           <div
             className="rounded-lg p-4 mb-6 text-right"
-            style={{ background: "#FAF7EE", border: "1px dashed rgba(26,31,46,0.15)" }}
+            style={{ background: "#FAF7EE", border: "1px dashed rgba(17,20,28,0.15)" }}
           >
             <div className="font-mono text-xs" style={{ color: "#8A8D9B" }}>رقم الطلب</div>
             <div className="font-mono font-bold text-sm mt-0.5" style={{ color: "#FFC629", textDecoration: "underline", textDecorationColor: "#FFC629" }}>
@@ -121,7 +100,7 @@ export default function RegisterPage() {
           className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
           style={{ background: "#FFC629", color: "#1A1F2E" }}
         >
-          L
+          M
         </div>
         <span className="font-display font-bold text-xl tracking-tight" style={{ color: "#1A1F2E" }}>
           Masnood
@@ -130,7 +109,7 @@ export default function RegisterPage() {
 
       <div
         className="w-full max-w-lg rounded-xl p-8"
-        style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)", boxShadow: "0 4px 24px rgba(26,31,46,0.06)" }}
+        style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)", boxShadow: "0 4px 24px rgba(17,20,28,0.06)" }}
       >
         <h1 className="font-display font-bold text-2xl mb-1" style={{ color: "#1A1F2E" }}>
           تسجيل شركة جديدة
@@ -139,13 +118,11 @@ export default function RegisterPage() {
           للوصول إلى الكتالوج الكامل والأسعار التجارية
         </p>
 
-        {error && <div className="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded text-sm">{error}</div>}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Company info */}
           <div
             className="p-4 rounded-lg mb-1"
-            style={{ background: "#FAF7EE", border: "1px solid rgba(26,31,46,0.08)" }}
+            style={{ background: "#FAF7EE", border: "1px solid rgba(17,20,28,0.08)" }}
           >
             <div className="font-mono text-[10px] font-semibold mb-3 uppercase" style={{ color: "#8A8D9B" }}>
               بيانات الشركة
@@ -179,17 +156,13 @@ export default function RegisterPage() {
                   <option>السويس</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-xs font-semibold mb-1.5" style={{ color: "#1A1F2E" }}>Monthly Average Order Amount (Optional)</label>
-                <input type="number" step="0.01" min="0" value={form.monthlyAvg} onChange={set("monthlyAvg")} placeholder="e.g. 50000" className={inputClass} style={inputStyle} />
-              </div>
             </div>
           </div>
 
           {/* Contact info */}
           <div
             className="p-4 rounded-lg mb-1"
-            style={{ background: "#FAF7EE", border: "1px solid rgba(26,31,46,0.08)" }}
+            style={{ background: "#FAF7EE", border: "1px solid rgba(17,20,28,0.08)" }}
           >
             <div className="font-mono text-[10px] font-semibold mb-3 uppercase" style={{ color: "#8A8D9B" }}>
               بيانات المسؤول
@@ -209,26 +182,17 @@ export default function RegisterPage() {
                   <input type="tel" value={form.phone} onChange={set("phone")} required placeholder="01xxxxxxxxx" className={`${inputClass} font-mono`} style={inputStyle} />
                 </div>
               </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "#1A1F2E" }}>كلمة المرور</label>
-                  <div className="relative">
-                    <input type={showPassword ? "text" : "password"} value={form.password} onChange={set("password")} required placeholder="••••••••" className={`${inputClass} pr-10`} style={inputStyle} />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: "#1A1F2E" }}>كلمة المرور</label>
+                <input type="password" value={form.password} onChange={set("password")} required placeholder="••••••••" className={inputClass} style={inputStyle} />
+              </div>
             </div>
           </div>
 
           {/* Payment preference */}
           <div
             className="p-4 rounded-lg"
-            style={{ background: "#FAF7EE", border: "1px solid rgba(26,31,46,0.08)" }}
+            style={{ background: "#FAF7EE", border: "1px solid rgba(17,20,28,0.08)" }}
           >
             <div className="font-mono text-[10px] font-semibold mb-3 uppercase" style={{ color: "#8A8D9B" }}>
               طريقة الدفع المفضلة
@@ -244,8 +208,8 @@ export default function RegisterPage() {
                   onClick={() => setPaymentPref(opt.val)}
                   className="p-3 rounded-lg text-right border-2 transition-all"
                   style={{
-                    borderColor: paymentPref === opt.val ? (opt.val === "credit" ? "#3A5CFF" : "#FFC629") : "rgba(26,31,46,0.12)",
-                    background: paymentPref === opt.val ? (opt.val === "credit" ? "rgba(58,92,255,0.06)" : "rgba(255,198,41,0.06)") : "transparent",
+                    borderColor: paymentPref === opt.val ? (opt.val === "credit" ? "#3A5CFF" : "#FFC629") : "rgba(17,20,28,0.12)",
+                    background: paymentPref === opt.val ? (opt.val === "credit" ? "rgba(58,92,255,0.06)" : "rgba(255,90,31,0.06)") : "transparent",
                   }}
                 >
                   <div className="font-mono text-[9px] font-bold mb-1" style={{ color: opt.val === "credit" ? "#3A5CFF" : "#FFC629" }}>

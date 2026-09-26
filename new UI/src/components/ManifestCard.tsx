@@ -7,7 +7,6 @@ interface LineItem {
   qty: number;
   unit: string;
   unitPrice: number;
-  isCancelled?: boolean;
 }
 
 interface ManifestCardProps {
@@ -44,11 +43,11 @@ export default function ManifestCard({
   compact = false,
 }: ManifestCardProps) {
   const bg = dark ? "#222840" : "#FAF7EE";
-  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(26,31,46,0.12)";
+  const border = dark ? "rgba(255,255,255,0.08)" : "rgba(17,20,28,0.12)";
   const text = dark ? "#FAF7EE" : "#1A1F2E";
   const muted = dark ? "#8A8D9B" : "#6b7280";
   const footerBg = dark ? "#1A1F2E" : "#1A1F2E";
-  const divider = dark ? "rgba(255,255,255,0.1)" : "rgba(26,31,46,0.1)";
+  const divider = dark ? "rgba(255,255,255,0.1)" : "rgba(17,20,28,0.1)";
   const rowHover = dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
 
   const displayItems = compact ? items.slice(0, 3) : items;
@@ -100,7 +99,7 @@ export default function ManifestCard({
         {displayItems.map((item) => (
           <div
             key={item.sku}
-            className={`line-item-row grid py-1.5 text-[11px] ${item.isCancelled ? 'opacity-50' : ''}`}
+            className="line-item-row grid py-1.5 text-[11px]"
             style={{
               gridTemplateColumns: "1fr auto auto auto",
               gap: "0 16px",
@@ -108,20 +107,17 @@ export default function ManifestCard({
             }}
           >
             <div>
-              <div className={`font-medium ${item.isCancelled ? 'line-through text-gray-400' : ''}`} style={{ color: text }}>
-                {item.nameAr}
-                {item.isCancelled && <span className="ml-1 text-[9px] font-bold text-red-500">(Cancelled)</span>}
-              </div>
+              <div className="font-medium" style={{ color: text }}>{item.nameAr}</div>
               <div className="font-mono text-[9px] mt-0.5" style={{ color: muted }}>{item.sku}</div>
             </div>
             <div className="font-mono text-center self-center" style={{ color: text }}>
               {item.qty} <span style={{ color: muted, fontSize: "9px" }}>{item.unit}</span>
             </div>
-            <div className={`font-mono text-left self-center ${item.isCancelled ? 'line-through' : ''}`} style={{ color: muted }}>
+            <div className="font-mono text-left self-center" style={{ color: muted }}>
               {formatPrice(item.unitPrice)}
             </div>
-            <div className={`font-mono text-left self-center font-semibold ${item.isCancelled ? 'line-through' : ''}`} style={{ color: text }}>
-              {item.isCancelled ? "-" : formatPrice(item.qty * item.unitPrice)}
+            <div className="font-mono text-left self-center font-semibold" style={{ color: text }}>
+              {formatPrice(item.qty * item.unitPrice)}
             </div>
           </div>
         ))}

@@ -1,41 +1,13 @@
-import { useState, useEffect } from "react";
-import { statusLabels } from "../data/mockData";
+import { useState } from "react";
+import { ORDERS, statusLabels } from "../data/mockData";
 import ManifestCard from "../components/ManifestCard";
 import NavBar from "../components/NavBar";
 import StampBadge from "../components/StampBadge";
-import { api } from "../lib/api";
 
 export default function OrderHistoryPage() {
   const [selected, setSelected] = useState<string | null>(null);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get('/api/storefront/orders')
-      .then(res => res.data)
-      .then(data => {
-        // Map backend orders to match mock shape
-        const mapped = data.map((o: any) => ({
-          id: `ORD-${o.id}`,
-          rawId: o.id,
-          date: o.createdAt,
-          status: o.status, // approved, cancelled, delivered, etc
-          paymentMethod: o.payment_method.toLowerCase(),
-          total: Number(o.total_amount),
-          items: o.OrderItems?.map((i: any) => ({
-            sku: i.product_id,
-            nameAr: i.product_name,
-            qty: i.quantity,
-            unit: "قطعة",
-            unitPrice: Number(i.unit_price)
-          })) || []
-        }));
-        setOrders(mapped);
-        setLoading(false);
-      });
-  }, []);
-
-  const order = orders.find((o) => o.id === selected);
+  const order = ORDERS.find((o) => o.id === selected);
 
   if (selected && order) {
     return (
@@ -62,7 +34,7 @@ export default function OrderHistoryPage() {
           {/* Additional metadata */}
           <div
             className="mt-4 rounded-xl p-5"
-            style={{ background: "#fff", border: "1px solid rgba(26,31,46,0.1)" }}
+            style={{ background: "#fff", border: "1px solid rgba(17,20,28,0.1)" }}
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {[
@@ -95,28 +67,23 @@ export default function OrderHistoryPage() {
       <NavBar />
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
         <h1 className="font-display font-bold text-2xl mb-2" style={{ color: "#1A1F2E" }}>طلباتي</h1>
-        {loading ? (
-          <p className="font-mono text-xs mb-7" style={{ color: "#8A8D9B" }}>جاري التحميل...</p>
-        ) : (
-          <>
-            <p className="font-mono text-xs mb-7" style={{ color: "#8A8D9B" }}>{orders.length} طلبات</p>
-            <div className="flex flex-col gap-5">
-              {orders.map((o) => (
-                <ManifestCard
-                  key={o.id}
-                  id={o.id}
-                  date={o.date}
-                  status={o.status}
-                  items={o.items}
-                  total={o.total}
-                  paymentMethod={o.paymentMethod}
-                  compact
-                  onClick={() => setSelected(o.id)}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <p className="font-mono text-xs mb-7" style={{ color: "#8A8D9B" }}>{ORDERS.length} طلبات</p>
+
+        <div className="flex flex-col gap-5">
+          {ORDERS.map((order) => (
+            <ManifestCard
+              key={order.id}
+              id={order.id}
+              date={order.date}
+              status={order.status}
+              items={order.items}
+              total={order.total}
+              paymentMethod={order.paymentMethod}
+              compact
+              onClick={() => setSelected(order.id)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
